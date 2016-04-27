@@ -7,7 +7,7 @@ MAINTAINER Marcin Ryzycki marcin@m12.io
 ENV \
   T3APP_BUILD_REPO_URL="https://github.com/neos/neos-base-distribution.git" \
   T3APP_BUILD_BRANCH=master \
-  T3APP_NEOS_SITE_PACKAGE=TYPO3.NeosDemoTypo3Org \
+  T3APP_NEOS_SITE_PACKAGE=Neos.Demo \
   REACT_UI_REPO_URI="https://github.com/PackageFactory/PackageFactory.Guevara.git" \
   REACT_UI_VERSION=dev-master \
   REACT_UI_FORCE_REINSTALL=false
