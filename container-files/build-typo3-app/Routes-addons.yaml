@@ -1,0 +1,6 @@
+-
+  name: 'PackageFactory Guevara'
+  uriPattern: '<GuevaraSubroutes>'
+  subRoutes:
+    'GuevaraSubroutes':
+      package: 'PackageFactory.Guevara'

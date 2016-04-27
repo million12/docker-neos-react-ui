@@ -1,0 +1,41 @@
+machine:
+  services:
+    - docker
+  hosts:
+    neos: 127.0.0.1
+
+dependencies:
+  pre:
+    - docker pull million12/typo3-flow-neos-abstract
+    - docker pull million12/mariadb:
+        background: true
+    - docker pull million12/php-testing:
+        background: true
+
+  override:
+      - docker build --tag=million12/neos-react-ui .
+
+  post:
+    # Launch DB backend
+    - docker run -d --name=db million12/mariadb
+    - docker logs -f db | tee -a ${CIRCLE_ARTIFACTS}/docker-db.log:
+        background: true
+
+# Run tests
+test:
+  override:
+    # ##################################################
+    # Build Neos container and do some basic tests
+    # ##################################################
+    - docker run -d --name=neos -p=8100:80 --link=db:db --env="T3APP_NAME=neos" million12/neos-react-ui
+    - docker logs -f neos > ${CIRCLE_ARTIFACTS}/docker-neos.log:
+        background: true
+    # Wait till Neos is fully initialised
+    - while true; do if grep "nginx entered RUNNING state" ${CIRCLE_ARTIFACTS}/docker-neos.log; then break; else sleep 1; fi done
+    # Test: do basic front-end tests
+    - curl -L --head http://neos:8100 && curl -s -L http://neos:8100
+    - curl -s --head http://neos:8100 | grep "HTTP/1.1 200 OK"
+    - curl -s --head http://neos:8100 | grep "X-Flow-Powered"
+    - curl -s http://neos:8100 | grep "Power when you need it"
+
+    - curl -s -L http://neos:8100/che! | grep "Neos comes with"

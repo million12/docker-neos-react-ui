@@ -1,0 +1,57 @@
+version: '2'
+
+services:
+  db:
+    image: million12/mariadb:latest
+#    volumes:
+#      - /tmp/docker-mysql-data:/var/lib/mysql
+    ports:
+      - 3306
+    environment:
+      MARIADB_PASS: db-password
+
+  # Data container for protos (clients' prototypes)
+  neosdata:
+    image: busybox:latest
+    command: echo protosdata
+    volumes:
+      - /data
+
+  neos:
+    image: million12/neos-react-ui
+    hostname: neos-development.local # Used by Codecept.io tests?
+    ports:
+      - '8182:80'
+    volumes_from:
+      - neosdata
+    links:
+      - db:db
+    environment:
+      - T3APP_NAME=neos-react-ui
+      - T3APP_DB_PASS=db-password
+      - REACT_UI_REPO_URI=https://github.com/PackageFactory/PackageFactory.Guevara.git
+      - REACT_UI_VERSION=dev-master # override with your version, e.g. dev-feature/my-feat
+      - REACT_UI_FORCE_REINSTALL=false
+
+  dev:
+    image: million12/php-app-ssh
+    ports:
+      - '2345:22'
+    links:
+      - db:db
+      - neos:neos
+    volumes_from:
+      - neos
+    environment:
+      IMPORT_GITHUB_PUB_KEYS: your-github-username
+
+#  testing:
+#    image: million12/php-testing
+#    ports:
+#      - '4444:4444'
+#      - '5900:5900'
+#    links:
+#      - db:db
+#      - neos:neos
+#    volumes_from:
+#      - neos
