@@ -25,7 +25,7 @@ dependencies:
 test:
   override:
     # ##################################################
-    # Build Neos container and do some basic tests
+    # Run Neos container and do some basic tests
     # ##################################################
     - docker run -d --name=neos -p=8100:80 --link=db:db --env="T3APP_NAME=neos" --env="T3APP_DB_PASS=password" million12/neos-react-ui
     - docker logs -f neos > ${CIRCLE_ARTIFACTS}/docker-neos.log:
@@ -33,9 +33,32 @@ test:
     # Wait till Neos is fully initialised
     - while true; do if grep "nginx entered RUNNING state" ${CIRCLE_ARTIFACTS}/docker-neos.log; then break; else sleep 1; fi done
     # Test: do basic front-end tests
-    - curl -L --head http://neos:8100 && curl -s -L http://neos:8100
-    - curl -s --head http://neos:8100 | grep "HTTP/1.1 200 OK"
-    - curl -s --head http://neos:8100 | grep "X-Flow-Powered"
+    - curl -sSLi http://neos:8100
+    - curl -sSLi http://neos:8100 | grep "HTTP/1.1 200 OK"
+    - curl -sSLi http://neos:8100 | grep X-Flow-Powered | grep Neos/dev
     - curl -s http://neos:8100 | grep "Power when you need it"
+    - curl -s http://neos:8100/en/features.html | grep "content in Neos"
 
-    - curl -s -L http://neos:8100/che! | grep "Neos comes with"
+    # Test: redirect to /neos when visitng login screen
+    - curl -sSLi http://neos:8100/che! | grep "HTTP/1.1 200 OK"
+    - curl -sSLi http://neos:8100/che! | grep Location | grep neos/login
+    - curl -sSLi http://neos:8100/che! | grep "Neos comes with"
+
+    - docker rm -f neos || true
+
+    # ##################################################
+    # Test with REACT_UI_FORCE_REINSTALL set to true
+    # ##################################################
+    - docker run -d --name=neos -p=8100:80 --link=db:db --env="REACT_UI_FORCE_REINSTALL=true" --env="T3APP_NAME=neos" --env="T3APP_DB_PASS=password" million12/neos-react-ui
+    - docker logs -f neos > ${CIRCLE_ARTIFACTS}/docker-neos-reinstall.log:
+        background: true
+    # Wait till Neos is fully initialised
+    - while true; do if grep "nginx entered RUNNING state" ${CIRCLE_ARTIFACTS}/docker-neos-reinstall.log; then break; else sleep 1; fi done
+    # Test if React UI package is reinstalled during startup...
+    - while true; do if grep "Amending composer.json" ${CIRCLE_ARTIFACTS}/docker-neos-reinstall.log; then break; else sleep 1; fi done
+    # Test: do basic front-end tests
+    - curl -sSLi http://neos:8100
+    - curl -sSLi http://neos:8100 | grep "HTTP/1.1 200 OK"
+    - curl -sSLi http://neos:8100/che! | grep "HTTP/1.1 200 OK"
+
+    - docker rm -f neos || true
