@@ -17,7 +17,7 @@ dependencies:
 
   post:
     # Launch DB backend
-    - docker run -d --name=db million12/mariadb
+    - docker run -d --name=db --env="MARIADB_PASS=password" million12/mariadb
     - docker logs -f db | tee -a ${CIRCLE_ARTIFACTS}/docker-db.log:
         background: true
 
@@ -27,7 +27,7 @@ test:
     # ##################################################
     # Build Neos container and do some basic tests
     # ##################################################
-    - docker run -d --name=neos -p=8100:80 --link=db:db --env="T3APP_NAME=neos" million12/neos-react-ui
+    - docker run -d --name=neos -p=8100:80 --link=db:db --env="T3APP_NAME=neos" --env="T3APP_DB_PASS=password" million12/neos-react-ui
     - docker logs -f neos > ${CIRCLE_ARTIFACTS}/docker-neos.log:
         background: true
     # Wait till Neos is fully initialised
