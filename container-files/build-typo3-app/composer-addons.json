@@ -1,6 +1,3 @@
     "repositories": [
         { "type": "vcs", "url": "REACT_UI_REPO_URI" }
     ],
-    "provide": {
-        "flowpack/neos-frontendlogin": "@dev"
-    },
