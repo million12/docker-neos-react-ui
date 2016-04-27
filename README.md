@@ -2,6 +2,12 @@
 [![Circle CI](https://circleci.com/gh/million12/docker-neos-react-ui/tree/master.svg?style=svg)](https://circleci.com/gh/million12/docker-neos-react-ui/tree/master)
 
 Docker image with Neos and the new back-end UI written in React UI.
+
+[million12/neos-react-ui](https://hub.docker.com/r/million12/neos-react-ui)
+
+
+# Features
+
 * [PackageFactory/PackageFactory.Guevara](https://github.com/PackageFactory/PackageFactory.Guevara) installed
   (dev-master version)
 * ability to switch to your fork / branch when container (re)starts
@@ -9,6 +15,7 @@ Docker image with Neos and the new back-end UI written in React UI.
 
 # Usage
 
+You will need working Docker and docker-compose.  
 Clone the repo and run:
 
 ```
