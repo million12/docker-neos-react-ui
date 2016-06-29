@@ -1,6 +1,6 @@
 -
-  name: 'PackageFactory Guevara'
-  uriPattern: '<GuevaraSubroutes>'
+  name: 'Neos UI'
+  uriPattern: '<NeosUiSubroutes>'
   subRoutes:
-    'GuevaraSubroutes':
-      package: 'PackageFactory.Guevara'
+    'NeosUiSubroutes':
+      package: 'Neos.Neos.Ui'

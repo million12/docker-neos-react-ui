@@ -1,7 +1,11 @@
 #!/usr/bin/env bash
 
-REACT_UI_PACKAGE_DIR="Packages/Application/PackageFactory.Guevara"
-CWD=$(pwd)
+# This script is used only `docker build` (--post-build hook)
+# and then during container start (--post-install and other hooks)
+# Path to this script is set via T3APP_USER_BUILD_SCRIPT in Dockerfile.
+
+REACT_UI_PACKAGE_DIR="Packages/Application/Neos.Neos.Ui"
+CWD=$(pwd) # current Neos root project dir
 
 log() {
   if [[ "$@" ]]; then echo "[REACT-UI] $@";
@@ -13,17 +17,13 @@ function amendComposer() {
 
   # Store original composer.json
   [ -f composer.orig.json ] || cp composer.json composer.orig.json
-  # Always restore original composer-addons.json in case it's re-edited
+
+  # Fill REACT_UI_REPO_URI value in `composer-addons.json`
+  # and then inject whole `composer-addons.json` into `composer.orig.json`
   cp -f /build-typo3-app/composer-addons.json .
-
   sed -i -r "s#REACT_UI_REPO_URI#${REACT_UI_REPO_URI}#g" composer-addons.json
-  cat composer-addons.json
-
-  sed '/"license":/r composer-addons.json' composer.orig.json > composer.new.json
-
-  cat composer.new.json | jq -M 'del(.require["flowpack/neos-frontendlogin"])' > composer.json
-  rm -f composer.new.json composer-addons.json
-  rm -f composer.lock
+  sed '/"license":/r composer-addons.json' composer.orig.json > composer.json
+  rm -f composer-addons.json composer.lock
 
   log "composer.json updated"
   cat composer.json && log
@@ -45,7 +45,7 @@ function installReactUI() {
     mv -f $REACT_UI_PACKAGE_DIR $REACT_UI_PACKAGE_DIR_PREV
   }
 
-  composer require packagefactory/guevara:$REACT_UI_VERSION
+  composer require neos/neos-ui:$REACT_UI_VERSION
   composer install
   cd $REACT_UI_PACKAGE_DIR
 
@@ -69,13 +69,22 @@ rebuildCache() {
   rm -rf Configuration/PackageStates.php
   rm -rf Configuration/Development/IncludeCachedConfigurations.php
 
-  FLOW_CONTEXT=$@ ./flow flow:cache:flush --force;
-#  FLOW_CONTEXT=$@ ./flow cache:warmup;
+  ./flow flow:cache:flush --force
 }
 
 
 
 case $@ in
+  *--post-build*)
+    # TODO: temporary workaround for https://github.com/Ocramius/ProxyManager/issues/321
+    # TODO: remove once it's fixed
+    composer require zendframework/zend-code:3.0.2
+
+    amendComposer
+    amendRoutes
+    installReactUI
+    ;;
+
   # Called when container starts, after source code has been installed
   *--post-install*)
     log "BUILD SCRIPT start..."

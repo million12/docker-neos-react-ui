@@ -35,14 +35,14 @@ test:
     # Test: do basic front-end tests
     - curl -sSLi http://neos:8100
     - curl -sSLi http://neos:8100 | grep "HTTP/1.1 200 OK"
-    - curl -sSLi http://neos:8100 | grep X-Flow-Powered | grep Neos/dev
+    - curl -sSLi http://neos:8100 | grep X-Flow-Powered | grep Neos
     - curl -s http://neos:8100 | grep "Power when you need it"
     - curl -s http://neos:8100/en/features.html | grep "content in Neos"
 
     # Test: redirect to /neos when visitng login screen
-    - curl -sSLi http://neos:8100/che! | grep "HTTP/1.1 200 OK"
-    - curl -sSLi http://neos:8100/che! | grep Location | grep neos/login
-    - curl -sSLi http://neos:8100/che! | grep "Neos comes with"
+    - curl -sSLi http://neos:8100/neos! | grep "HTTP/1.1 200 OK"
+    - curl -sSLi http://neos:8100/neos! | grep Location | grep neos/login
+    - curl -sSLi http://neos:8100/neos! | grep "Neos comes with"
 
     - docker rm -f neos || true
 
@@ -59,6 +59,6 @@ test:
     # Test: do basic front-end tests
     - curl -sSLi http://neos:8100
     - curl -sSLi http://neos:8100 | grep "HTTP/1.1 200 OK"
-    - curl -sSLi http://neos:8100/che! | grep "HTTP/1.1 200 OK"
+    - curl -sSLi http://neos:8100/neos! | grep "HTTP/1.1 200 OK"
 
     - docker rm -f neos || true

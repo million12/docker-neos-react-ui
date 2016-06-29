@@ -8,16 +8,11 @@ ENV \
   T3APP_BUILD_REPO_URL="https://github.com/neos/neos-base-distribution.git" \
   T3APP_BUILD_BRANCH=master \
   T3APP_NEOS_SITE_PACKAGE=Neos.Demo \
-  REACT_UI_REPO_URI="https://github.com/PackageFactory/PackageFactory.Guevara.git" \
+  T3APP_USER_BUILD_SCRIPT="/build-typo3-app/build.sh" \
+  REACT_UI_REPO_URI="https://github.com/neos/neos-ui.git" \
   REACT_UI_VERSION=dev-master \
   REACT_UI_FORCE_REINSTALL=false
 
-RUN \
-  yum install -y jq
-
 ADD container-files /
 
-# Hook into T3APP_USER_BUILD_SCRIPT with our custom script
-RUN \
-  export T3APP_USER_BUILD_SCRIPT=/build-typo3-app/amend-neos-install.sh && \
-  . /build-typo3-app/pre-install-typo3-app.sh
+RUN . /build-typo3-app/pre-install-typo3-app.sh
