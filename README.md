@@ -28,18 +28,23 @@ docker-compose up
 
 Access the new Neos React admin panel on your docker host on port 
 `:8182`, e.g.  
-http://docker:8182/neos!  
-(note `!` at the end).
+[http://docker:8182/neos!](http://docker:8182/neos!) (note `!` at the end).
+
+Refer to the parent image, [million12/typo3-flow-neos-abstract](https://github.com/million12/docker-typo3-flow-neos-abstract)
+shall you need any help with further customisation of this image.
 
 
 # Development
 
 See project repository: [neos/neos-ui](https://github.com/neos/neos-ui).
 
-Shall you need SFTP access to the project, uncomment the `dev` container 
-in the `docker-compose.yml` file and provide your GitHub username to 
-`IMPORT_GITHUB_PUB_KEYS` env variable. Then access it via 
-`ssh -p 2345 www@docker` (or whatever your Docker host is).
+Shall you need **SFTP access to the container**, uncomment the `dev` 
+container  in the `docker-compose.yml` file and provide your GitHub 
+username to `IMPORT_GITHUB_PUB_KEYS` env variable. Then access it via  
+```
+ssh -p 2345 www@docker
+```
+(or whatever your Docker host is).
 
 
 # Runtime variables
